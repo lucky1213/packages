@@ -7,9 +7,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
@@ -28,9 +28,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String info = '';
+  X5CoreVersion? info;
 
-  bool isLoading = false;
+  bool? isLoading;
+
+  int progress = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -41,41 +43,54 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: <Widget>[
             ElevatedButton(
-              onPressed: () async {
-                if (isLoading) {
+              onPressed: () {
+                if (isLoading == true) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('正在初始化x5内核')),
+                    SnackBar(
+                      backgroundColor: Colors.red.shade700,
+                      content: const Text('正在初始化x5内核'),
+                    ),
                   );
                   return;
                 }
                 setState(() {
                   isLoading = true;
                 });
-                await X5Sdk.init().then((bool value) {
+                X5Sdk.setX5SdkListener(X5SdkListener(
+                  onDownloadFinish: (int code) {
+                    setState(() {
+                      progress = 100;
+                    });
+                  },
+                  onDownloadProgress: (int progress) {
+                    setState(() {
+                      progress = progress;
+                    });
+                  },
+                ));
+                X5Sdk.init().then((bool value) {
                   setState(() {
                     isLoading = false;
                   });
+                  getX5CoreInfo();
                   if (value) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('x5内核初始化成功')),
                     );
-                  } else {}
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: Colors.red.shade700,
+                        content: const Text('x5内核初始化失败，请重试'),
+                      ),
+                    );
+                  }
                 });
               },
               child: const Text('初始化x5内核'),
             ),
             ElevatedButton(
-              onPressed: () async {
-                await X5Sdk.getX5InitInfo().then((Map<String, dynamic>? value) {
-                  setState(() {
-                    if (value == null) {
-                      info = '';
-                    } else {
-                      info = value.toString();
-                    }
-                  });
-                });
-              },
+              onPressed: getX5CoreInfo,
               child: const Text('获取x5安装状态'),
             ),
             ElevatedButton(
@@ -105,13 +120,58 @@ class _HomePageState extends State<HomePage> {
               child: const Text('打开webview'),
             ),
             Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               margin: const EdgeInsets.only(top: 30),
-              child: Text('内核加载状态==>$info'),
+              child: Builder(
+                builder: (BuildContext context) {
+                  String text = '未初始化';
+                  if (isLoading != null) {
+                    if (!isLoading!) {
+                      if (info != null) {
+                        text = '成功';
+                      } else {
+                        text = '失败';
+                      }
+                    } else {
+                      text = '加载中 ==> $progress%';
+                    }
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('内核加载状态: $text'),
+                      const SizedBox(height: 6),
+                      if (info != null) Text('SDK版本: ${info?.sdkVersion}'),
+                      const SizedBox(height: 6),
+                      if (info != null) Text('内核版本: ${info?.coreVersion}'),
+                      const SizedBox(height: 6),
+                      if (info != null) Text('x5内核是否生效: ${info?.isX5Core}'),
+                    ],
+                  );
+                },
+              ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  void getX5CoreInfo() {
+    X5Sdk.getX5CoreVersion().then((X5CoreVersion value) {
+      setState(() {
+        info = value;
+      });
+    }).onError((PlatformException error, StackTrace stackTrace) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red.shade700,
+          content: Text(error.message ?? '获取内核信息失败'),
+        ),
+      );
+    });
   }
 
   void showInputDialog(

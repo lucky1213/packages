@@ -58,18 +58,20 @@ public class X5WebViewFlutterPlugin implements MethodChannel.MethodCallHandler {
                 QbSdk.reset(context);
                 result.success(true);
                 break;
-            case "getX5InitInfo":
+            case "getX5CoreVersion":
 
                 // 当前进程内，SDK是否使用的X5内核，不触发加载、只关注当前状态
                 final boolean b = QbSdk.isX5Core();
+                // 内核版本
+                final int d = QbSdk.getTbsVersion(context);
                 final boolean c = QbSdk.getIsInitX5Environment();
                 final boolean e = QbSdk.isTbsCoreInited();
-                final int d = QbSdk.getTbsVersion(context);
+                final int f = QbSdk.getTbsSdkVersion();
 
                 HashMap<String, Object> map = new HashMap<>();
-                map.put("tbs_version", d);
+                map.put("sdk_version", f);
+                map.put("core_version", d);
                 map.put("is_x5_core", b);
-                map.put("is_tbs_core_inited", e);
                 Log.e("x5SDK", "getTbsVersion ==>"+d);
                 Log.e("x5SDK", "getIsInitX5Environment ==>"+c);
                 Log.e("x5SDK", "isX5Core ==>"+b);

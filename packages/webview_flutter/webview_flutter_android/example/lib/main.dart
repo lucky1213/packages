@@ -14,8 +14,134 @@ import 'package:path_provider/path_provider.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
+typedef ConfirmCallBack = Function(String url);
+
 void main() {
-  runApp(const MaterialApp(home: WebViewExample()));
+  runApp(const MaterialApp(home: HomePage()));
+}
+
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String info = '';
+
+  bool isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: SizedBox(
+        width: double.infinity,
+        child: Column(
+          children: <Widget>[
+            ElevatedButton(
+              onPressed: () async {
+                if (isLoading) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('正在初始化x5内核')),
+                  );
+                  return;
+                }
+                setState(() {
+                  isLoading = true;
+                });
+                await X5Sdk.init().then((bool value) {
+                  setState(() {
+                    isLoading = false;
+                  });
+                  if (value) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('x5内核初始化成功')),
+                    );
+                  } else {}
+                });
+              },
+              child: const Text('初始化x5内核'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await X5Sdk.getX5InitInfo().then((Map<String, dynamic>? value) {
+                  setState(() {
+                    if (value == null) {
+                      info = '';
+                    } else {
+                      info = value.toString();
+                    }
+                  });
+                });
+              },
+              child: const Text('获取x5安装状态'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (BuildContext context) =>
+                        const WebViewExample(url: 'http://debugx5.qq.com'),
+                  ),
+                );
+              },
+              child: const Text('打开debugx5'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                showInputDialog(
+                    onConfirm: (String url) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (BuildContext context) =>
+                              WebViewExample(url: url),
+                        ),
+                      );
+                    },
+                    defaultText: 'https://www.baidu.com');
+              },
+              child: const Text('打开webview'),
+            ),
+            Container(
+              margin: const EdgeInsets.only(top: 30),
+              child: Text('内核加载状态==>$info'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void showInputDialog(
+      {required ConfirmCallBack onConfirm, String defaultText = ''}) {
+    final TextEditingController controller =
+        TextEditingController(text: defaultText);
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('输入链接测试'),
+            content: TextField(
+              controller: controller,
+            ),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('取消')),
+              TextButton(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    onConfirm(controller.text);
+                  },
+                  child: const Text('跳转'))
+            ],
+          );
+        });
+  }
 }
 
 const String kNavigationExamplePage = '''
@@ -74,9 +200,14 @@ const String kTransparentBackgroundPage = '''
 ''';
 
 class WebViewExample extends StatefulWidget {
-  const WebViewExample({super.key, this.cookieManager});
+  const WebViewExample({
+    super.key,
+    this.cookieManager,
+    required this.url,
+  });
 
   final PlatformWebViewCookieManager? cookieManager;
+  final String url;
 
   @override
   State<WebViewExample> createState() => _WebViewExampleState();
@@ -145,7 +276,7 @@ Page resource error:
         },
       )
       ..loadRequest(LoadRequestParams(
-        uri: Uri.parse('https://flutter.dev'),
+        uri: Uri.parse(widget.url),
       ));
   }
 

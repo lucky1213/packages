@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -28,13 +29,6 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebStorageHostA
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
 
-/**
- * Java platform implementation of the webview_flutter plugin.
- *
- * <p>Register this in an add to app scenario to gracefully handle activity and context changes.
- *
- * <p>Call {@link #registerWith} to use the stable {@code io.flutter.plugin.common} package instead.
- */
 public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   @Nullable private InstanceManager instanceManager;
 
@@ -42,44 +36,16 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   private WebViewHostApiImpl webViewHostApi;
   private JavaScriptChannelHostApiImpl javaScriptChannelHostApi;
 
-  /**
-   * Add an instance of this to {@link io.flutter.embedding.engine.plugins.PluginRegistry} to
-   * register it.
-   *
-   * <p>THIS PLUGIN CODE PATH DEPENDS ON A NEWER VERSION OF FLUTTER THAN THE ONE DEFINED IN THE
-   * PUBSPEC.YAML. Text input will fail on some Android devices unless this is used with at least
-   * flutter/flutter@1d4d63ace1f801a022ea9ec737bf8c15395588b9. Use the V1 embedding with {@link
-   * #registerWith} to use this plugin with older Flutter versions.
-   *
-   * <p>Registration should eventually be handled automatically by v2 of the
-   * GeneratedPluginRegistrant. https://github.com/flutter/flutter/issues/42694
-   */
-  public WebViewFlutterPlugin() {}
+  @Nullable private X5WebViewFlutterPlugin x5WebViewFlutterPlugin;
 
-  /**
-   * Registers a plugin implementation that uses the stable {@code io.flutter.plugin.common}
-   * package.
-   *
-   * <p>Calling this automatically initializes the plugin. However plugins initialized this way
-   * won't react to changes in activity or context, unlike {@link WebViewFlutterPlugin}.
-   */
-  @SuppressWarnings({"unused", "deprecation"})
-  public static void registerWith(
-      @NonNull io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    new WebViewFlutterPlugin()
-        .setUp(
-            registrar.messenger(),
-            registrar.platformViewRegistry(),
-            registrar.activity(),
-            new FlutterAssetManager.RegistrarFlutterAssetManager(
-                registrar.context().getAssets(), registrar));
-  }
+  public WebViewFlutterPlugin() {}
 
   private void setUp(
       BinaryMessenger binaryMessenger,
       PlatformViewRegistry viewRegistry,
       Context context,
       FlutterAssetManager flutterAssetManager) {
+
     instanceManager =
         InstanceManager.create(
             identifier ->
@@ -152,6 +118,9 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
         binding.getApplicationContext(),
         new FlutterAssetManager.PluginBindingFlutterAssetManager(
             binding.getApplicationContext().getAssets(), binding.getFlutterAssets()));
+
+    x5WebViewFlutterPlugin = new X5WebViewFlutterPlugin();
+    x5WebViewFlutterPlugin.setUp(binding.getBinaryMessenger());
   }
 
   @Override
@@ -160,11 +129,18 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
       instanceManager.stopFinalizationListener();
       instanceManager = null;
     }
+    if (x5WebViewFlutterPlugin != null) {
+      x5WebViewFlutterPlugin.destroy();
+      x5WebViewFlutterPlugin = null;
+    }
   }
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
     updateContext(activityPluginBinding.getActivity());
+    if (x5WebViewFlutterPlugin != null) {
+      x5WebViewFlutterPlugin.updateActivity(activityPluginBinding.getActivity());
+    }
   }
 
   @Override
@@ -176,6 +152,9 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   public void onReattachedToActivityForConfigChanges(
       @NonNull ActivityPluginBinding activityPluginBinding) {
     updateContext(activityPluginBinding.getActivity());
+    if (x5WebViewFlutterPlugin != null) {
+      x5WebViewFlutterPlugin.updateActivity(activityPluginBinding.getActivity());
+    }
   }
 
   @Override

@@ -4,8 +4,8 @@
 
 package io.flutter.plugins.webviewflutter;
 
-import android.webkit.WebSettings;
-import android.webkit.WebView;
+import com.tencent.smtt.sdk.WebSettings;
+import com.tencent.smtt.sdk.WebView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebSettingsHostApi;
@@ -73,6 +73,7 @@ public class WebSettingsHostApiImpl implements WebSettingsHostApi {
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   public void setJavaScriptEnabled(@NonNull Long instanceId, @NonNull Boolean flag) {
     final WebSettings webSettings = Objects.requireNonNull(instanceManager.getInstance(instanceId));
     webSettings.setJavaScriptEnabled(flag);

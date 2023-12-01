@@ -1,10 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="io.flutter.plugins.webviewflutterexample">
+    package="io.flutter.plugins.webviewflutterexample">
 
   <application
     android:usesCleartextTraffic="true"
     android:icon="@mipmap/ic_launcher"
     android:label="webview_flutter_example">
+
     <meta-data
         android:name="flutterEmbedding"
         android:value="2" />
@@ -14,7 +15,8 @@
       android:launchMode="singleTop"
       android:name="io.flutter.embedding.android.FlutterActivity"
       android:theme="@style/LaunchTheme"
-      android:windowSoftInputMode="adjustResize">
+      android:windowSoftInputMode="adjustResize"
+      android:exported="true">
       <!-- This keeps the window background of the activity showing
            until Flutter renders its first frame. It can be removed if
            there is no splash screen (such as the default splash screen

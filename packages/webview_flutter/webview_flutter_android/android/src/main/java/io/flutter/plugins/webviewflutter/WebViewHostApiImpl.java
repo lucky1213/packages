@@ -10,9 +10,13 @@ import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewParent;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import com.tencent.smtt.export.external.interfaces.IX5WebChromeClient;
+import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
+import com.tencent.smtt.sdk.ValueCallback;
+import com.tencent.smtt.sdk.WebChromeClient;
+import com.tencent.smtt.sdk.WebView;
+import com.tencent.smtt.sdk.WebViewClient;
+import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -96,6 +100,10 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     @Override
     public View getView() {
       return this;
+    }
+
+    @Override
+    public void setVisibility(int i) {
     }
 
     @Override

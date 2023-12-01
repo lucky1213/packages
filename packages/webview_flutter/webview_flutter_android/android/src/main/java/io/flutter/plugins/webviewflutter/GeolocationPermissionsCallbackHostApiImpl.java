@@ -4,7 +4,7 @@
 
 package io.flutter.plugins.webviewflutter;
 
-import android.webkit.GeolocationPermissions;
+import com.tencent.smtt.export.external.interfaces.GeolocationPermissionsCallback;
 import androidx.annotation.NonNull;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.GeolocationPermissionsCallbackHostApi;
@@ -45,7 +45,7 @@ public class GeolocationPermissionsCallbackHostApiImpl
     getGeolocationPermissionsCallbackInstance(instanceId).invoke(origin, allow, retain);
   }
 
-  private GeolocationPermissions.Callback getGeolocationPermissionsCallbackInstance(
+  private GeolocationPermissionsCallback getGeolocationPermissionsCallbackInstance(
       @NonNull Long identifier) {
     return Objects.requireNonNull(instanceManager.getInstance(identifier));
   }

@@ -5,7 +5,7 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.os.Build;
-import android.webkit.CookieManager;
+import com.tencent.smtt.sdk.CookieManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import io.flutter.plugin.common.BinaryMessenger;

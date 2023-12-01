@@ -4,7 +4,7 @@
 
 package io.flutter.plugins.webviewflutter;
 
-import android.webkit.WebStorage;
+import com.tencent.smtt.sdk.WebStorage;
 import androidx.annotation.NonNull;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebStorageHostApi;
 import java.util.Objects;

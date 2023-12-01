@@ -4,7 +4,7 @@
 
 package io.flutter.plugins.webviewflutter;
 
-import android.webkit.PermissionRequest;
+import com.tencent.smtt.export.external.interfaces.PermissionRequest;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import io.flutter.plugin.common.BinaryMessenger;

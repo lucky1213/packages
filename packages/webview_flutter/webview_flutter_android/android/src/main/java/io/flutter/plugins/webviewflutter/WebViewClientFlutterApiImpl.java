@@ -4,15 +4,13 @@
 
 package io.flutter.plugins.webviewflutter;
 
-import android.annotation.SuppressLint;
 import android.os.Build;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import com.tencent.smtt.export.external.interfaces.WebResourceError;
+import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
+import com.tencent.smtt.sdk.WebView;
+import com.tencent.smtt.sdk.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.webkit.WebResourceErrorCompat;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientFlutterApi;
 import java.util.HashMap;
@@ -31,7 +29,6 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
   private final InstanceManager instanceManager;
   private final WebViewFlutterApiImpl webViewFlutterApi;
 
-  @RequiresApi(api = Build.VERSION_CODES.M)
   static GeneratedAndroidWebView.WebResourceErrorData createWebResourceErrorData(
       WebResourceError error) {
     return new GeneratedAndroidWebView.WebResourceErrorData.Builder()
@@ -39,17 +36,6 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
         .setDescription(error.getDescription().toString())
         .build();
   }
-
-  @SuppressLint("RequiresFeature")
-  static GeneratedAndroidWebView.WebResourceErrorData createWebResourceErrorData(
-      WebResourceErrorCompat error) {
-    return new GeneratedAndroidWebView.WebResourceErrorData.Builder()
-        .setErrorCode((long) error.getErrorCode())
-        .setDescription(error.getDescription().toString())
-        .build();
-  }
-
-  @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
   static GeneratedAndroidWebView.WebResourceRequestData createWebResourceRequestData(
       WebResourceRequest request) {
     final GeneratedAndroidWebView.WebResourceRequestData.Builder requestData =
@@ -110,38 +96,14 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
   }
 
   /**
-   * Passes arguments from {@link WebViewClient#onReceivedError(WebView, WebResourceRequest,
-   * WebResourceError)} to Dart.
+   * Passes arguments from {@link WebViewClientCompat#onReceivedError(WebView,
+   * WebResourceRequest, WebResourceError)} to Dart.
    */
-  @RequiresApi(api = Build.VERSION_CODES.M)
   public void onReceivedRequestError(
       @NonNull WebViewClient webViewClient,
       @NonNull WebView webView,
       @NonNull WebResourceRequest request,
       @NonNull WebResourceError error,
-      @NonNull Reply<Void> callback) {
-    webViewFlutterApi.create(webView, reply -> {});
-
-    final Long webViewIdentifier =
-        Objects.requireNonNull(instanceManager.getIdentifierForStrongReference(webView));
-    onReceivedRequestError(
-        getIdentifierForClient(webViewClient),
-        webViewIdentifier,
-        createWebResourceRequestData(request),
-        createWebResourceErrorData(error),
-        callback);
-  }
-
-  /**
-   * Passes arguments from {@link androidx.webkit.WebViewClientCompat#onReceivedError(WebView,
-   * WebResourceRequest, WebResourceError)} to Dart.
-   */
-  @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-  public void onReceivedRequestError(
-      @NonNull WebViewClient webViewClient,
-      @NonNull WebView webView,
-      @NonNull WebResourceRequest request,
-      @NonNull WebResourceErrorCompat error,
       @NonNull Reply<Void> callback) {
     webViewFlutterApi.create(webView, reply -> {});
 

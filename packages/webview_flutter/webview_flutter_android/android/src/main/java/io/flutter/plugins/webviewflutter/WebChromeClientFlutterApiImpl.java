@@ -5,10 +5,12 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.os.Build;
-import android.webkit.GeolocationPermissions;
-import android.webkit.PermissionRequest;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
+
+import com.tencent.smtt.export.external.interfaces.GeolocationPermissionsCallback;
+import com.tencent.smtt.export.external.interfaces.PermissionRequest;
+import com.tencent.smtt.sdk.WebChromeClient;
+import com.tencent.smtt.sdk.WebView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import io.flutter.plugin.common.BinaryMessenger;
@@ -77,7 +79,7 @@ public class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
   public void onGeolocationPermissionsShowPrompt(
       @NonNull WebChromeClient webChromeClient,
       @NonNull String origin,
-      @NonNull GeolocationPermissions.Callback callback,
+      @NonNull GeolocationPermissionsCallback callback,
       @NonNull WebChromeClientFlutterApi.Reply<Void> replyCallback) {
     new GeolocationPermissionsCallbackFlutterApiImpl(binaryMessenger, instanceManager)
         .create(callback, reply -> {});

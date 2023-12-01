@@ -1,2 +1,30 @@
-<manifest package="io.flutter.plugins.webviewflutter">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="io.flutter.plugins.webviewflutter">
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!-- 硬件加速对X5视频播放非常重要，建议开启 -->
+    <uses-permission android:name="android.permission.GET_TASKS" />
+
+    <application>
+        <!-- 由于 Android P 系统在 targetAPI 为 28 时，默认情况下 apache 库已从 bootclasspath 中移除，需要在 AndroidManifest.xml 文件中的 application 标签内添加如下配置： -->
+        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+
+        <service
+            android:name="com.tencent.smtt.export.external.DexClassLoaderProviderService"
+            android:label="dexopt"
+            android:process=":dexopt" >
+        </service>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/x5webview_file_paths" />
+        </provider>
+    </application>
 </manifest>

@@ -4,19 +4,16 @@
 
 package io.flutter.plugins.webviewflutter;
 
-import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.view.KeyEvent;
-import android.webkit.WebResourceError;
-import android.webkit.WebResourceRequest;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import com.tencent.smtt.export.external.interfaces.WebResourceError;
+import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
+import com.tencent.smtt.sdk.WebView;
+import com.tencent.smtt.sdk.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.webkit.WebResourceErrorCompat;
-import androidx.webkit.WebViewClientCompat;
 import java.util.Objects;
 
 /**
@@ -128,18 +125,6 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
     @Override
     public void onPageFinished(@NonNull WebView view, @NonNull String url) {
       flutterApi.onPageFinished(this, view, url, reply -> {});
-    }
-
-    // This method is only called when the WebViewFeature.RECEIVE_WEB_RESOURCE_ERROR feature is
-    // enabled. The deprecated method is called when a device doesn't support this.
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    @SuppressLint("RequiresFeature")
-    @Override
-    public void onReceivedError(
-        @NonNull WebView view,
-        @NonNull WebResourceRequest request,
-        @NonNull WebResourceErrorCompat error) {
-      flutterApi.onReceivedRequestError(this, view, request, error, reply -> {});
     }
 
     // Legacy codepath for versions that don't support the variant above.

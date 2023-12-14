@@ -1,18 +1,26 @@
 // ignore_for_file:  sort_constructors_first
 // ignore_for_file: avoid_classes_with_only_static_members, public_member_api_docs
 
+import 'dart:io';
+
 import 'package:flutter/services.dart';
 
 class X5Sdk {
   static const MethodChannel _channel = MethodChannel('webview_flutter_x5');
 
   static Future<bool> init() async {
+    if (!Platform.isAndroid) {
+      return Future.value(false);
+    }
     final bool result = await _channel.invokeMethod<bool>('init') ?? false;
     return result;
   }
 
   ///设置内核下载安装事件
   static void setX5SdkListener(X5SdkListener listener) {
+    if (!Platform.isAndroid) {
+      return;
+    }
     _channel.setMethodCallHandler((MethodCall call) async {
       switch (call.method) {
         case 'onDownloadFinish':
@@ -29,15 +37,24 @@ class X5Sdk {
   }
 
   static Future<void> reset() {
+    if (!Platform.isAndroid) {
+      return Future<void>.value();
+    }
     return _channel.invokeMethod<void>('reset');
   }
 
   static Future<bool> isX5WebViewAvailable() async {
+    if (!Platform.isAndroid) {
+      return Future.value(false);
+    }
     final bool result = await _channel.invokeMethod<bool>('isX5Core') ?? false;
     return result;
   }
 
   static Future<X5CoreVersion> getX5CoreVersion() async {
+    if (!Platform.isAndroid) {
+      return Future.value(X5CoreVersion.invalid());
+    }
     final Map<Object?, Object?>? result =
         await _channel.invokeMethod<Map<Object?, Object?>>('getX5CoreVersion');
     if (result == null) {
@@ -89,6 +106,14 @@ class X5CoreVersion {
     required this.coreVersion,
     required this.isX5Core,
   });
+
+  factory X5CoreVersion.invalid() {
+    return X5CoreVersion(
+      sdkVersion: 0,
+      coreVersion: 0,
+      isX5Core: false,
+    );
+  }
 
   factory X5CoreVersion.fromMap(Map<String, dynamic> map) {
     return X5CoreVersion(
